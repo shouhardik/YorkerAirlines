@@ -29,4 +29,23 @@ npm run dev
 
 - `GET /api/health`
 - `GET /api/flights`
+- `GET /api/bookings`
 - `POST /api/bookings`
+
+## CI/CD (GitHub Actions)
+
+Two workflows are included:
+
+- CI: `.github/workflows/ci.yml`
+  - Runs on pull requests and pushes to `main`/`master`
+  - Installs dependencies and runs `npm run build`
+
+- CD: `.github/workflows/cd.yml`
+  - Runs on push to `main`/`master` and manual trigger
+  - Builds the app, uploads `frontend/dist` as an artifact
+  - Optionally triggers deployment if repo secret `DEPLOY_HOOK_URL` is set
+
+### Enable Deployment
+
+1. In GitHub repo settings, create secret: `DEPLOY_HOOK_URL`
+2. Set it to your platform deploy webhook URL (for example Render, Netlify, Vercel, etc.)
