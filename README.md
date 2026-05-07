@@ -49,3 +49,17 @@ Two workflows are included:
 
 1. In GitHub repo settings, create secret: `DEPLOY_HOOK_URL`
 2. Set it to your platform deploy webhook URL (for example Render, Netlify, Vercel, etc.)
+
+## Jenkins CI
+
+This repo now includes a `Jenkinsfile` with stages:
+
+- Checkout
+- Install (`npm ci`)
+- Test (`npm test`)
+- Build (`npm run build`)
+
+### Notes
+
+- The pipeline expects Jenkins NodeJS tool named `node-20`.
+- If your Jenkins tool has a different name, update it in `Jenkinsfile` under `tools`.

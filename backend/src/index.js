@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import { pathToFileURL } from "url";
 
 const app = express();
 const BASE_PORT = Number(process.env.PORT) || 4000;
@@ -97,4 +98,12 @@ function startServer(port) {
   });
 }
 
-startServer(BASE_PORT);
+const isDirectRun =
+  typeof process.argv[1] === "string" &&
+  import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectRun) {
+  startServer(BASE_PORT);
+}
+
+export { app };
