@@ -58,8 +58,20 @@ This repo now includes a `Jenkinsfile` with stages:
 - Install (`npm ci`)
 - Test (`npm test`)
 - Build (`npm run build`)
+- Docker Build & Push
+- Deploy to Kubernetes
 
 ### Notes
 
 - The pipeline expects Jenkins NodeJS tool named `node-20`.
 - If your Jenkins tool has a different name, update it in `Jenkinsfile` under `tools`.
+- Docker credentials ID expected by pipeline: `dockerhub-creds`
+- Kubernetes credentials ID expected by pipeline: `kubeconfig` (Secret file type)
+
+### Deployment Files Added
+
+- Docker build file: `backend/Dockerfile`
+- Kubernetes manifests:
+  - `k8s/deployment.yaml`
+  - `k8s/service.yaml`
+  - `k8s/ingress.yaml`

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yorker-airlines-backend
+  labels:
+    app: yorker-airlines-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yorker-airlines-backend
+  template:
+    metadata:
+      labels:
+        app: yorker-airlines-backend
+    spec:
+      containers:
+        - name: backend
+          image: shouhardik/yorker-airlines-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4000
+          env:
+            - name: PORT
+              value: "4000"

@@ -5,6 +5,10 @@ pipeline {
     nodejs 'node-20'
   }
 
+  environment {
+    IMAGE_NAME = 'shouhardik/yorker-airlines-backend'
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -27,6 +31,42 @@ pipeline {
     stage('Build') {
       steps {
         sh 'npm run build'
+      }
+    }
+
+    stage('Docker Build & Push') {
+      steps {
+        script {
+          def imageTag = "${env.BUILD_NUMBER}"
+          withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_TOKEN')]) {
+            sh """
+              echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+              docker build -t ${IMAGE_NAME}:${imageTag} -f backend/Dockerfile .
+              docker tag ${IMAGE_NAME}:${imageTag} ${IMAGE_NAME}:latest
+              docker push ${IMAGE_NAME}:${imageTag}
+              docker push ${IMAGE_NAME}:latest
+              docker logout
+            """
+          }
+        }
+      }
+    }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        script {
+          def imageTag = "${env.BUILD_NUMBER}"
+          withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_FILE')]) {
+            sh """
+              export KUBECONFIG="$KUBECONFIG_FILE"
+              kubectl apply -f k8s/deployment.yaml
+              kubectl apply -f k8s/service.yaml
+              kubectl apply -f k8s/ingress.yaml
+              kubectl set image deployment/yorker-airlines-backend backend=${IMAGE_NAME}:${imageTag}
+              kubectl rollout status deployment/yorker-airlines-backend
+            """
+          }
+        }
       }
     }
   }
