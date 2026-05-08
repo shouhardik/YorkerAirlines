@@ -29,6 +29,30 @@ const flights = [
     departure: "2026-05-09T13:30:00Z",
     price: 732,
     aircraft: "Airbus A330"
+  },
+  {
+    id: "YA404",
+    from: "San Diego",
+    to: "San Francisco",
+    departure: "2026-05-10T08:20:00Z",
+    price: 189,
+    aircraft: "Airbus A320neo"
+  },
+  {
+    id: "YA505",
+    from: "San Diego",
+    to: "New York",
+    departure: "2026-05-11T15:10:00Z",
+    price: 469,
+    aircraft: "Boeing 737 MAX 8"
+  },
+  {
+    id: "YA606",
+    from: "Boston",
+    to: "San Jose",
+    departure: "2026-05-12T12:55:00Z",
+    price: 512,
+    aircraft: "Airbus A321XLR"
   }
 ];
 
