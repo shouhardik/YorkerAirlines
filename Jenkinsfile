@@ -55,15 +55,15 @@ pipeline {
     steps {
         script {
             withCredentials([
-            usernamePassword(
-              credentialsId: 'dockerhub-creds',
-              usernameVariable: 'DOCKERHUB_USER',
-              passwordVariable: 'DOCKERHUB_PASSWORD'
+    usernamePassword(
+        credentialsId: 'dockerhub-creds',
+        usernameVariable: 'DOCKERHUB_USER',
+        passwordVariable: 'DOCKERHUB_PASSWORD'
     )
 ]) {
 
     sh '''
-    echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+    echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USER" --password-stdin
 
     docker build -t shouhardik/yorker-airlines-backend:${BUILD_NUMBER} -f backend/Dockerfile .
 
