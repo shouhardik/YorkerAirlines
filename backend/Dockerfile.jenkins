@@ -4,7 +4,7 @@ USER root
 
 # Docker CLI + dependencies
 RUN apt-get update && \
-    apt-get install -y docker.io curl ca-certificates && \
+    apt-get install -y libatomic1 docker.io curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 # Optional but recommended for your pipeline deploy stage
