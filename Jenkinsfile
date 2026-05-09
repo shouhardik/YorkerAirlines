@@ -54,24 +54,30 @@ pipeline {
     stage('Docker Build & Push') {
     steps {
         script {
-            withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKERHUB_TOKEN')]) {
+            withCredentials([
+            usernamePassword(
+              credentialsId: 'dockerhub-creds',
+              usernameVariable: 'DOCKERHUB_USER',
+              passwordVariable: 'DOCKERHUB_PASSWORD'
+    )
+]) {
 
-                sh '''
-                echo "$DOCKERHUB_TOKEN" | docker login -u shouhardik --password-stdin
+    sh '''
+    echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
 
-                docker build -t shouhardik/yorker-airlines-backend:${BUILD_NUMBER} -f backend/Dockerfile .
+    docker build -t shouhardik/yorker-airlines-backend:${BUILD_NUMBER} -f backend/Dockerfile .
 
-                docker tag shouhardik/yorker-airlines-backend:${BUILD_NUMBER} \
-                           shouhardik/yorker-airlines-backend:latest
-                '''
+    docker tag shouhardik/yorker-airlines-backend:${BUILD_NUMBER} \
+               shouhardik/yorker-airlines-backend:latest
+    '''
 
-                retry(3) {
-                    sh '''
-                    docker push shouhardik/yorker-airlines-backend:${BUILD_NUMBER}
-                    docker push shouhardik/yorker-airlines-backend:latest
-                    '''
-                }
-            }
+    retry(3) {
+        sh '''
+        docker push shouhardik/yorker-airlines-backend:${BUILD_NUMBER}
+        docker push shouhardik/yorker-airlines-backend:latest
+        '''
+    }
+}
         }
     }
 }
