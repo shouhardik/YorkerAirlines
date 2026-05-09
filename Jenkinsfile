@@ -34,23 +34,47 @@ pipeline {
       }
     }
 
+    // stage('Docker Build & Push') {
+    //   steps {
+    //     script {
+    //       def imageTag = "${env.BUILD_NUMBER}"
+    //       withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_TOKEN')]) {
+    //         sh """
+    //           echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
+    //           docker build -t ${IMAGE_NAME}:${imageTag} -f backend/Dockerfile .
+    //           docker tag ${IMAGE_NAME}:${imageTag} ${IMAGE_NAME}:latest
+    //           docker push ${IMAGE_NAME}:${imageTag}
+    //           docker push ${IMAGE_NAME}:latest
+    //           docker logout
+    //         """
+    //       }
+    //     }
+    //   }
+    // }
     stage('Docker Build & Push') {
-      steps {
+    steps {
         script {
-          def imageTag = "${env.BUILD_NUMBER}"
-          withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_TOKEN')]) {
-            sh """
-              echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USER" --password-stdin
-              docker build -t ${IMAGE_NAME}:${imageTag} -f backend/Dockerfile .
-              docker tag ${IMAGE_NAME}:${imageTag} ${IMAGE_NAME}:latest
-              docker push ${IMAGE_NAME}:${imageTag}
-              docker push ${IMAGE_NAME}:latest
-              docker logout
-            """
-          }
+            withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKERHUB_TOKEN')]) {
+
+                sh '''
+                echo "$DOCKERHUB_TOKEN" | docker login -u shouhardik --password-stdin
+
+                docker build -t shouhardik/yorker-airlines-backend:${BUILD_NUMBER} -f backend/Dockerfile .
+
+                docker tag shouhardik/yorker-airlines-backend:${BUILD_NUMBER} \
+                           shouhardik/yorker-airlines-backend:latest
+                '''
+
+                retry(3) {
+                    sh '''
+                    docker push shouhardik/yorker-airlines-backend:${BUILD_NUMBER}
+                    docker push shouhardik/yorker-airlines-backend:latest
+                    '''
+                }
+            }
         }
-      }
     }
+}
 
     stage('Deploy to Kubernetes') {
       steps {
